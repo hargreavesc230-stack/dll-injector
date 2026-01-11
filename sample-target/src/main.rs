@@ -1,7 +1,4 @@
 use clap::Parser;
-use std::ffi::OsStr;
-use std::iter::once;
-use std::os::windows::ffi::OsStrExt;
 use std::thread;
 use std::time::Duration;
 use windows_sys::Win32::Foundation::{CloseHandle, GetLastError, INVALID_HANDLE_VALUE};
@@ -22,10 +19,6 @@ struct Args {
 
     #[arg(long, default_value_t = 1000)]
     interval_ms: u64,
-}
-
-fn to_wide_os(s: &OsStr) -> Vec<u16> {
-    s.encode_wide().chain(once(0)).collect()
 }
 
 fn wide_cstr_to_string(buf: &[u16]) -> String {

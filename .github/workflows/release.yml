@@ -1,0 +1,58 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~\AppData\Local\cargo\registry
+            ~\AppData\Local\cargo\git
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+
+      - name: Build release
+        run: cargo build --workspace --release
+
+      - name: Package artifacts
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $zip = "release-artifacts.zip"
+          if (Test-Path $zip) { Remove-Item $zip }
+          $patterns = @(
+            "target/release/*.exe",
+            "target/release/*.dll",
+            "target/release/*.pdb"
+          )
+          $files = @()
+          foreach ($pattern in $patterns) {
+            $files += Get-ChildItem -Path $pattern -ErrorAction SilentlyContinue
+          }
+          if (-not $files) { throw "No build artifacts found to package." }
+          Compress-Archive -Path $files.FullName -DestinationPath $zip
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: release-artifacts.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
