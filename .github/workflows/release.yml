@@ -11,6 +11,8 @@ permissions:
 jobs:
   release:
     runs-on: windows-latest
+    env:
+      RELEASE_ZIP: release-${{ github.ref_name }}.zip
 
     steps:
       - uses: actions/checkout@v4
@@ -36,7 +38,7 @@ jobs:
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
-          $zip = "release-artifacts.zip"
+          $zip = "$env:RELEASE_ZIP"
           if (Test-Path $zip) { Remove-Item $zip }
           $patterns = @(
             "target/release/*.exe",
@@ -53,6 +55,9 @@ jobs:
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          files: release-artifacts.zip
+          name: ${{ github.ref_name }}
+          tag_name: ${{ github.ref_name }}
+          generate_release_notes: true
+          files: ${{ env.RELEASE_ZIP }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
