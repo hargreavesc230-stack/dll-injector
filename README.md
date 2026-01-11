@@ -61,3 +61,7 @@ prompt for a PID, and then perform the injection.
 ## License
 
 MIT. See `LICENSE`.
+
+## Anti-virus note
+
+Because this tool includes DLL injection code, some security products may flag the built binaries as malware. Use only on systems you own or have permission to test.
