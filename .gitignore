@@ -1,0 +1,12 @@
+# Build outputs
+/target/
+
+# Windows binaries (ensure built DLL/EXE artifacts are ignored)
+**/*.exe
+**/*.dll
+**/*.pdb
+
+# Misc
+*.log
+.vscode/
+.idea/

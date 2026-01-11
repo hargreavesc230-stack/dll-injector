@@ -1,0 +1,26 @@
+[package]
+name = "dll-injector"
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+description = "Simple Windows DLL injector for authorized debugging and testing."
+
+[dependencies]
+clap = { version = "4.5.4", features = ["derive"] }
+windows-sys = { version = "0.52.0", features = [
+  "Win32_Foundation",
+  "Win32_System_Threading",
+  "Win32_System_Memory",
+  "Win32_System_LibraryLoader",
+  "Win32_System_Diagnostics_Debug",
+  "Win32_System_Diagnostics_ToolHelp",
+  "Win32_Security",
+] }
+
+[workspace]
+members = [
+  ".",
+  "test-dll",
+  "sample-target",
+]
+resolver = "2"
